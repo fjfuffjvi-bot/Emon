@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CYBER-67 TEAM</title>
     <style>
-        /* ===== RESET & BASE ===== */
+        /* ========== RESET & BASE ========== */
         * {
             margin: 0;
             padding: 0;
@@ -14,29 +14,20 @@
 
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
 
-        :root {
-            --green: #00ff41;
-            --dark-green: #00cc33;
-            --bg: #0a0f0a;
-            --panel-bg: #0d150d;
-            --border-glow: rgba(0, 255, 65, 0.25);
-            --text-glow: rgba(0, 255, 65, 0.6);
-            --red: #ff0040;
-            --cyan: #00f0ff;
-        }
-
-        html,
         body {
-            background: var(--bg);
-            color: var(--green);
-            font-family: 'Share Tech Mono', monospace;
+            background: #0a0a0a;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Share Tech Mono', monospace;
+            padding: 20px;
+            position: relative;
             overflow-x: hidden;
-            cursor: default;
         }
 
-        /* ===== MATRIX RAIN CANVAS ===== */
-        #matrix-canvas {
+        /* ========== MATRIX RAIN CANVAS ========== */
+        #matrixCanvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -47,506 +38,421 @@
             opacity: 0.15;
         }
 
-        /* ===== SCANLINE OVERLAY ===== */
-        .scanlines {
+        /* ========== GLOW OVERLAY ========== */
+        .glow-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(0, 255, 200, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(0, 255, 100, 0.04) 0%, transparent 60%);
+            z-index: 0;
             pointer-events: none;
+        }
+
+        /* ========== SCANLINE ========== */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: repeating-linear-gradient(0deg,
                     transparent 0px,
                     transparent 3px,
-                    rgba(0, 0, 0, 0.08) 3px,
-                    rgba(0, 0, 0, 0.08) 4px);
-        }
-
-        /* ===== GLITCH OVERLAY ===== */
-        .glitch-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
+                    rgba(0, 255, 0, 0.015) 3px,
+                    rgba(0, 255, 0, 0.015) 4px);
+            z-index: 0;
             pointer-events: none;
-            background: radial-gradient(circle at 20% 80%, rgba(0, 255, 65, 0.02) 0%, transparent 60%);
         }
 
-        /* ===== MAIN WRAPPER ===== */
-        .app-wrapper {
+        /* ========== MAIN CARD ========== */
+        .main-card {
             position: relative;
-            z-index: 2;
+            z-index: 1;
             max-width: 820px;
-            margin: 0 auto;
-            padding: 20px 18px 40px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.92);
+            border: 1px solid rgba(0, 255, 180, 0.25);
+            border-radius: 24px;
+            padding: 36px 30px 42px;
+            box-shadow:
+                0 0 40px rgba(0, 255, 180, 0.06),
+                inset 0 0 60px rgba(0, 255, 180, 0.02);
+            backdrop-filter: blur(6px);
+            transition: border-color 0.3s;
         }
 
-        /* ===== HEADER ===== */
+        .main-card:hover {
+            border-color: rgba(0, 255, 180, 0.45);
+        }
+
+        /* ========== HEADER ========== */
         .header {
             text-align: center;
-            padding: 28px 0 12px;
-            border-bottom: 2px solid var(--green);
-            box-shadow: 0 0 30px rgba(0, 255, 65, 0.08);
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(0, 255, 180, 0.12);
             margin-bottom: 28px;
             position: relative;
-        }
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60%;
-            height: 2px;
-            background: var(--green);
-            filter: blur(8px);
-            opacity: 0.5;
         }
 
         .header h1 {
             font-family: 'Orbitron', monospace;
             font-weight: 900;
-            font-size: 2.6rem;
+            font-size: 2.2rem;
             letter-spacing: 6px;
-            text-transform: uppercase;
-            text-shadow: 0 0 20px var(--text-glow), 0 0 60px rgba(0, 255, 65, 0.15);
-            color: var(--green);
-            word-break: break-word;
+            background: linear-gradient(135deg, #00ffc8, #00cc88, #00ffaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 180, 0.25);
+            animation: glowPulse 3s ease-in-out infinite;
         }
-        .header h1 .glitch-char {
-            display: inline-block;
-            animation: glitch-pulse 3s infinite alternate;
-        }
+
         .header .sub {
             font-size: 0.85rem;
+            color: rgba(0, 255, 180, 0.5);
             letter-spacing: 8px;
-            color: rgba(0, 255, 65, 0.5);
-            margin-top: 6px;
-            font-family: 'Orbitron', monospace;
-        }
-        .header .sub span {
-            color: var(--cyan);
-            opacity: 0.7;
+            margin-top: 4px;
+            font-family: 'Share Tech Mono', monospace;
         }
 
-        /* ===== STATUS BAR ===== */
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 255, 65, 0.04);
-            border: 1px solid rgba(0, 255, 65, 0.12);
-            border-radius: 4px;
-            padding: 10px 18px;
-            margin-bottom: 24px;
-            font-size: 0.8rem;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .status-bar .status-led {
+        .header .badge {
             display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 12px var(--green);
-            margin-right: 8px;
-            animation: led-pulse 1.8s infinite;
+            margin-top: 10px;
+            background: rgba(0, 255, 180, 0.07);
+            border: 1px solid rgba(0, 255, 180, 0.15);
+            border-radius: 30px;
+            padding: 4px 18px;
+            font-size: 0.65rem;
+            color: #00ffb0;
+            letter-spacing: 3px;
+            font-family: 'Share Tech Mono', monospace;
         }
-        .status-bar .sys-info {
-            color: rgba(0, 255, 65, 0.6);
+
+        @keyframes glowPulse {
+            0%,
+            100% {
+                filter: drop-shadow(0 0 8px rgba(0, 255, 180, 0.15));
+            }
+            50% {
+                filter: drop-shadow(0 0 25px rgba(0, 255, 180, 0.35));
+            }
         }
-        .status-bar .sys-info strong {
-            color: var(--green);
-            font-weight: 400;
-        }
-        .status-bar .timer-box {
-            background: rgba(0, 255, 65, 0.06);
-            padding: 4px 14px;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 255, 65, 0.15);
-            font-size: 0.85rem;
+
+        /* ========== TIMER BAR ========== */
+        .timer-section {
+            background: rgba(0, 255, 180, 0.03);
+            border: 1px solid rgba(0, 255, 180, 0.08);
+            border-radius: 14px;
+            padding: 12px 18px;
+            margin-bottom: 26px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            color: rgba(0, 255, 65, 0.7);
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .status-bar .timer-box .count {
-            font-weight: 700;
-            color: var(--green);
-            font-size: 1.1rem;
-            min-width: 28px;
+
+        .timer-section .label {
+            font-size: 0.75rem;
+            color: rgba(0, 255, 180, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .timer-section .timer-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            color: #00ffb0;
+            text-shadow: 0 0 15px rgba(0, 255, 180, 0.25);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 180, 0.12);
+            min-width: 70px;
             text-align: center;
         }
-        .status-bar .timer-box .count.warning {
-            color: var(--red);
-            animation: blink 0.6s infinite;
-        }
 
-        /* ===== TERMINAL PANEL ===== */
-        .terminal-panel {
-            background: var(--panel-bg);
-            border: 1px solid rgba(0, 255, 65, 0.15);
-            border-radius: 6px;
-            padding: 22px 24px 26px;
-            box-shadow: 0 0 40px rgba(0, 255, 65, 0.03), inset 0 0 60px rgba(0, 255, 65, 0.01);
-            margin-bottom: 24px;
-            position: relative;
-        }
-        .terminal-panel::before {
-            content: '>';
-            position: absolute;
-            top: 10px;
-            left: 14px;
-            color: rgba(0, 255, 65, 0.15);
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .terminal-panel .prompt-line {
-            color: rgba(0, 255, 65, 0.3);
+        .timer-section .status {
             font-size: 0.7rem;
-            letter-spacing: 2px;
-            margin-bottom: 18px;
-            padding-left: 4px;
-            border-bottom: 1px solid rgba(0, 255, 65, 0.05);
-            padding-bottom: 10px;
+            color: rgba(0, 255, 180, 0.35);
+            letter-spacing: 1px;
         }
 
-        /* ===== TEXT INPUT AREA ===== */
-        .text-input-area {
-            margin-bottom: 18px;
+        .timer-section .status .highlight {
+            color: #00ffb0;
+            font-weight: bold;
         }
-        .text-input-area label {
-            display: block;
-            font-size: 0.75rem;
-            color: rgba(0, 255, 65, 0.4);
+
+        /* ========== TEXT UPDATE AREA ========== */
+        .text-update-area {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 180, 0.10);
+            border-radius: 16px;
+            padding: 20px 22px;
+            margin-bottom: 22px;
+            transition: border-color 0.3s;
+        }
+
+        .text-update-area:focus-within {
+            border-color: rgba(0, 255, 180, 0.35);
+        }
+
+        .text-update-area .section-label {
+            font-size: 0.7rem;
+            color: rgba(0, 255, 180, 0.35);
             letter-spacing: 3px;
             text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-        .text-input-area textarea {
-            width: 100%;
-            background: rgba(0, 255, 65, 0.03);
-            border: 1px solid rgba(0, 255, 65, 0.12);
-            border-radius: 4px;
-            padding: 14px 16px;
-            color: var(--green);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1rem;
-            resize: vertical;
-            min-height: 90px;
-            outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            line-height: 1.6;
-        }
-        .text-input-area textarea:focus {
-            border-color: var(--green);
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.06);
-        }
-        .text-input-area textarea::placeholder {
-            color: rgba(0, 255, 65, 0.15);
-        }
-
-        /* ===== BUTTON ROW ===== */
-        .btn-row {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .btn-row .btn {
-            flex: 1;
-            min-width: 140px;
-            padding: 14px 18px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border: 1px solid var(--green);
-            background: rgba(0, 255, 65, 0.04);
-            color: var(--green);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: hidden;
-            text-align: center;
-        }
-        .btn-row .btn::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 255, 65, 0.06) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-        .btn-row .btn:hover::after {
-            opacity: 1;
-        }
-        .btn-row .btn:hover {
-            background: rgba(0, 255, 65, 0.08);
-            box-shadow: 0 0 30px rgba(0, 255, 65, 0.08), inset 0 0 30px rgba(0, 255, 65, 0.03);
-            transform: translateY(-1px);
-        }
-        .btn-row .btn:active {
-            transform: scale(0.97);
-        }
-        .btn-row .btn .icon {
-            margin-right: 6px;
-            font-size: 0.9rem;
-        }
-        .btn-row .btn.btn-copy {
-            border-color: var(--cyan);
-            color: var(--cyan);
-        }
-        .btn-row .btn.btn-copy:hover {
-            background: rgba(0, 240, 255, 0.06);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.06);
-        }
-        .btn-row .btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        /* ===== TEXT DISPLAY (OUTPUT) ===== */
-        .text-display {
-            background: rgba(0, 255, 65, 0.02);
-            border: 1px solid rgba(0, 255, 65, 0.06);
-            border-radius: 4px;
-            padding: 18px 20px;
-            min-height: 70px;
-            font-size: 1.05rem;
-            line-height: 1.7;
-            color: rgba(0, 255, 65, 0.85);
-            transition: all 0.5s ease;
-            position: relative;
-            word-break: break-word;
-            white-space: pre-wrap;
-        }
-        .text-display .placeholder-text {
-            color: rgba(0, 255, 65, 0.12);
-            font-style: italic;
-            font-size: 0.9rem;
-        }
-        .text-display.active {
-            border-color: rgba(0, 255, 65, 0.25);
-            box-shadow: 0 0 40px rgba(0, 255, 65, 0.03), inset 0 0 40px rgba(0, 255, 65, 0.01);
-            animation: text-reveal 0.6s ease;
-        }
-        .text-display .cursor-blink {
-            display: inline-block;
-            width: 2px;
-            height: 1.2em;
-            background: var(--green);
-            margin-left: 2px;
-            vertical-align: text-bottom;
-            animation: blink 1s infinite;
-        }
-
-        /* ===== TEAM SECTION ===== */
-        .team-section {
-            margin-top: 28px;
-            border-top: 1px solid rgba(0, 255, 65, 0.06);
-            padding-top: 26px;
-        }
-
-        .team-section .team-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            color: var(--green);
-            text-shadow: 0 0 20px rgba(0, 255, 65, 0.08);
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .team-section .team-title .badge {
-            font-size: 0.55rem;
-            background: rgba(0, 255, 65, 0.08);
-            padding: 2px 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 255, 65, 0.1);
-            color: rgba(0, 255, 65, 0.4);
-            letter-spacing: 2px;
-        }
-
-        .team-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-        @media (max-width: 600px) {
-            .team-grid {
-                grid-template-columns: 1fr;
-            }
-            .header h1 {
-                font-size: 1.8rem;
-                letter-spacing: 3px;
-            }
-            .btn-row .btn {
-                min-width: 100px;
-                font-size: 0.65rem;
-                padding: 12px 12px;
-            }
-            .terminal-panel {
-                padding: 16px 14px 20px;
-            }
-        }
-
-        .team-card {
-            background: rgba(0, 255, 65, 0.02);
-            border: 1px solid rgba(0, 255, 65, 0.06);
-            border-radius: 4px;
-            padding: 18px 20px 20px;
-            transition: all 0.3s ease;
-        }
-        .team-card:hover {
-            border-color: rgba(0, 255, 65, 0.12);
-            background: rgba(0, 255, 65, 0.03);
-        }
-        .team-card .name {
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--green);
-            letter-spacing: 2px;
-            margin-bottom: 6px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .team-card .name .rank {
-            font-size: 0.5rem;
-            color: rgba(0, 255, 65, 0.2);
-            letter-spacing: 3px;
-            font-weight: 400;
+
+        .text-update-area .section-label .line {
+            flex: 1;
+            height: 1px;
+            background: rgba(0, 255, 180, 0.08);
         }
-        .team-card .role {
-            font-size: 0.7rem;
-            color: rgba(0, 255, 65, 0.25);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
+
+        .text-update-area .editable-text {
+            width: 100%;
+            min-height: 120px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #b0ffe0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            line-height: 1.7;
+            resize: vertical;
+            padding: 4px 0;
+            transition: color 0.3s;
         }
-        .team-card .desc {
-            font-size: 0.85rem;
-            color: rgba(0, 255, 65, 0.6);
-            line-height: 1.6;
+
+        .text-update-area .editable-text::placeholder {
+            color: rgba(0, 255, 180, 0.15);
+            font-style: italic;
         }
-        .team-card .desc strong {
-            color: var(--green);
-            font-weight: 400;
+
+        .text-update-area .editable-text:focus {
+            color: #e0fff0;
         }
-        .team-card .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 12px;
-        }
-        .team-card .tags span {
-            font-size: 0.55rem;
-            background: rgba(0, 255, 65, 0.04);
-            border: 1px solid rgba(0, 255, 65, 0.06);
-            padding: 2px 12px;
-            border-radius: 20px;
-            color: rgba(0, 255, 65, 0.25);
+
+        .text-update-area .char-count {
+            text-align: right;
+            font-size: 0.65rem;
+            color: rgba(0, 255, 180, 0.2);
+            margin-top: 6px;
             letter-spacing: 1px;
         }
 
-        /* ===== EMON SPECIAL CARD ===== */
-        .emon-card {
-            grid-column: 1 / -1;
-            background: rgba(0, 255, 65, 0.03);
-            border: 1px solid rgba(0, 255, 65, 0.1);
-            border-radius: 4px;
-            padding: 20px 24px 22px;
+        /* ========== BUTTONS ROW ========== */
+        .btn-row {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .btn-row .btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px 20px;
+            border: 1px solid rgba(0, 255, 180, 0.20);
+            border-radius: 12px;
+            background: rgba(0, 255, 180, 0.03);
+            color: #80ffd0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-        }
-        .emon-card::before {
-            content: '★';
-            position: absolute;
-            top: -10px;
-            right: 10px;
-            font-size: 4rem;
-            color: rgba(0, 255, 65, 0.02);
-        }
-        .emon-card .name {
-            font-family: 'Orbitron', monospace;
-            font-weight: 900;
-            font-size: 1.4rem;
-            color: var(--green);
-            text-shadow: 0 0 30px rgba(0, 255, 65, 0.08);
-            letter-spacing: 4px;
-            margin-bottom: 6px;
-        }
-        .emon-card .name .highlight {
-            color: var(--cyan);
-            text-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
-        }
-        .emon-card .subtitle {
-            font-size: 0.7rem;
-            color: rgba(0, 255, 65, 0.2);
-            letter-spacing: 4px;
-            margin-bottom: 12px;
-        }
-        .emon-card .desc {
-            font-size: 0.9rem;
-            color: rgba(0, 255, 65, 0.65);
-            line-height: 1.7;
-            max-width: 90%;
-        }
-        .emon-card .desc strong {
-            color: var(--green);
-            font-weight: 400;
-        }
-        .emon-card .signature {
-            margin-top: 12px;
-            font-size: 0.7rem;
-            color: rgba(0, 255, 65, 0.15);
-            letter-spacing: 6px;
-            text-align: right;
+            text-align: center;
+            text-transform: uppercase;
         }
 
-        /* ===== FOOTER ===== */
+        .btn-row .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 180, 0.06), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-row .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-row .btn:hover {
+            border-color: rgba(0, 255, 180, 0.50);
+            background: rgba(0, 255, 180, 0.06);
+            box-shadow: 0 0 30px rgba(0, 255, 180, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .btn-row .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-row .btn .icon {
+            margin-right: 8px;
+            display: inline-block;
+        }
+
+        .btn-row .btn .sub-text {
+            display: block;
+            font-size: 0.55rem;
+            color: rgba(0, 255, 180, 0.25);
+            letter-spacing: 1px;
+            margin-top: 3px;
+            font-weight: normal;
+            text-transform: none;
+        }
+
+        .btn-row .btn-copy {
+            border-color: rgba(0, 200, 255, 0.20);
+            color: #80d0ff;
+        }
+
+        .btn-row .btn-copy:hover {
+            border-color: rgba(0, 200, 255, 0.50);
+            background: rgba(0, 200, 255, 0.06);
+            box-shadow: 0 0 30px rgba(0, 200, 255, 0.06);
+        }
+
+        /* ========== TEAM SECTION ========== */
+        .team-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 180, 0.06);
+            border-radius: 16px;
+            padding: 22px 24px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .team-section .team-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .team-section .team-name {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #00ffc8, #00dd99);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+            text-shadow: 0 0 30px rgba(0, 255, 180, 0.12);
+        }
+
+        .team-section .team-tag {
+            font-size: 0.6rem;
+            color: rgba(0, 255, 180, 0.25);
+            border: 1px solid rgba(0, 255, 180, 0.08);
+            border-radius: 20px;
+            padding: 2px 14px;
+            letter-spacing: 2px;
+        }
+
+        .team-section .team-desc {
+            color: #a0d0c0;
+            font-size: 0.92rem;
+            line-height: 1.8;
+            padding: 6px 0 2px;
+        }
+
+        .team-section .team-desc .highlight-text {
+            color: #00ffb0;
+            text-shadow: 0 0 12px rgba(0, 255, 180, 0.15);
+        }
+
+        /* ========== EMON SECTION ========== */
+        .emon-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 180, 0, 0.08);
+            border-radius: 16px;
+            padding: 22px 24px;
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .emon-section .emon-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .emon-section .emon-name {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(255, 200, 0, 0.10);
+        }
+
+        .emon-section .emon-badge {
+            font-size: 0.55rem;
+            color: rgba(255, 200, 0, 0.3);
+            border: 1px solid rgba(255, 200, 0, 0.08);
+            border-radius: 20px;
+            padding: 2px 14px;
+            letter-spacing: 2px;
+        }
+
+        .emon-section .emon-desc {
+            color: #d4c8a0;
+            font-size: 0.92rem;
+            line-height: 1.9;
+            padding: 4px 0 2px;
+        }
+
+        .emon-section .emon-desc .highlight-gold {
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 200, 0, 0.12);
+        }
+
+        .emon-section .emon-desc .highlight-cyan {
+            color: #00ffc8;
+            text-shadow: 0 0 15px rgba(0, 255, 200, 0.10);
+        }
+
+        /* ========== FOOTER ========== */
         .footer {
-            margin-top: auto;
-            padding-top: 30px;
             text-align: center;
             font-size: 0.6rem;
-            color: rgba(0, 255, 65, 0.08);
+            color: rgba(0, 255, 180, 0.12);
             letter-spacing: 4px;
-            border-top: 1px solid rgba(0, 255, 65, 0.03);
-        }
-        .footer span {
-            color: rgba(0, 255, 65, 0.12);
+            padding-top: 14px;
+            border-top: 1px solid rgba(0, 255, 180, 0.04);
+            margin-top: 4px;
+            font-family: 'Share Tech Mono', monospace;
         }
 
-        /* ===== ANIMATIONS ===== */
-        @keyframes led-pulse {
-            0%,
-            100% {
-                opacity: 1;
-                box-shadow: 0 0 12px var(--green);
-            }
-            50% {
-                opacity: 0.4;
-                box-shadow: 0 0 4px var(--green);
-            }
+        .footer .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 1px;
+            background: rgba(0, 255, 180, 0.2);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 4px;
         }
 
         @keyframes blink {
@@ -559,561 +465,480 @@
             }
         }
 
-        @keyframes glitch-pulse {
-            0%,
-            100% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            10% {
-                opacity: 0.8;
-                transform: translateX(-1px);
-            }
-            20% {
-                opacity: 1;
-                transform: translateX(1px);
-            }
-            30% {
-                opacity: 0.9;
-                transform: translateX(-0.5px);
-            }
-            40% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes text-reveal {
-            0% {
-                opacity: 0;
-                transform: translateY(6px);
-                filter: blur(2px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-                filter: blur(0);
-            }
-        }
-
-        /* ===== NOTIFICATION TOAST ===== */
+        /* ========== TOAST NOTIFICATION ========== */
         .toast {
             position: fixed;
             bottom: 30px;
             left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: rgba(0, 255, 65, 0.04);
-            border: 1px solid rgba(0, 255, 65, 0.08);
-            padding: 12px 28px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            color: rgba(0, 255, 65, 0.5);
-            letter-spacing: 2px;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 20, 15, 0.92);
+            border: 1px solid rgba(0, 255, 180, 0.20);
+            border-radius: 14px;
+            padding: 14px 32px;
+            color: #b0ffe0;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 50px rgba(0, 255, 180, 0.05);
             z-index: 999;
             opacity: 0;
-            transition: all 0.5s ease;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             pointer-events: none;
-            backdrop-filter: blur(6px);
-            font-family: 'Share Tech Mono', monospace;
+            white-space: nowrap;
         }
+
         .toast.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
-        .toast.success {
-            border-color: rgba(0, 255, 65, 0.2);
-            color: var(--green);
+
+        .toast .toast-icon {
+            margin-right: 10px;
         }
 
-        /* ===== SCROLLBAR ===== */
+        /* ========== SCROLLBAR ========== */
         ::-webkit-scrollbar {
             width: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: var(--bg);
+            background: rgba(0, 0, 0, 0.4);
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(0, 255, 65, 0.15);
-            border-radius: 2px;
+            background: rgba(0, 255, 180, 0.20);
+            border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 255, 65, 0.25);
+            background: rgba(0, 255, 180, 0.35);
         }
 
-        /* ===== MISC ===== */
-        .glow-text {
-            text-shadow: 0 0 30px rgba(0, 255, 65, 0.04);
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 600px) {
+            .main-card {
+                padding: 24px 16px 30px;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+                letter-spacing: 3px;
+            }
+            .header .sub {
+                font-size: 0.65rem;
+                letter-spacing: 4px;
+            }
+            .btn-row .btn {
+                min-width: 100%;
+                padding: 12px 16px;
+                font-size: 0.75rem;
+            }
+            .timer-section {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                gap: 6px;
+            }
+            .timer-section .timer-display {
+                font-size: 1.1rem;
+                padding: 4px 12px;
+            }
+            .team-section .team-name {
+                font-size: 1.2rem;
+            }
+            .emon-section .emon-name {
+                font-size: 1.4rem;
+            }
+            .text-update-area .editable-text {
+                font-size: 0.85rem;
+                min-height: 90px;
+            }
+            .toast {
+                font-size: 0.7rem;
+                padding: 10px 20px;
+                white-space: normal;
+                max-width: 90%;
+            }
         }
-        .text-muted {
-            color: rgba(0, 255, 65, 0.2);
-        }
-        .gap-8 {
-            gap: 8px;
-        }
-        .flex {
-            display: flex;
-        }
-        .flex-center {
-            align-items: center;
+
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1.2rem;
+                letter-spacing: 2px;
+            }
+            .team-section .team-name {
+                font-size: 1rem;
+            }
+            .emon-section .emon-name {
+                font-size: 1.1rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== MATRIX RAIN ===== -->
-    <canvas id="matrix-canvas"></canvas>
-
-    <!-- ===== SCANLINES ===== -->
-    <div class="scanlines"></div>
-    <div class="glitch-overlay"></div>
+    <!-- ===== MATRIX CANVAS ===== -->
+    <canvas id="matrixCanvas"></canvas>
+    <div class="glow-overlay"></div>
+    <div class="scanline"></div>
 
     <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast">⏳ SYSTEM READY</div>
+    <div class="toast" id="toast">
+        <span class="toast-icon">⚡</span>
+        <span id="toastMessage">Ready</span>
+    </div>
 
-    <!-- ===== MAIN APP ===== -->
-    <div class="app-wrapper">
+    <!-- ===== MAIN CARD ===== -->
+    <div class="main-card">
 
         <!-- HEADER -->
-        <header class="header">
-            <h1>
-                <span class="glitch-char">C</span>
-                <span class="glitch-char">Y</span>
-                <span class="glitch-char">B</span>
-                <span class="glitch-char">E</span>
-                <span class="glitch-char">R</span>
-                <span style="color:rgba(0,255,65,0.2);">-</span>
-                <span class="glitch-char">6</span>
-                <span class="glitch-char">7</span>
-            </h1>
-            <div class="sub"><span>✦</span> ELITE CYBER COLLECTIVE <span>✦</span></div>
-        </header>
+        <div class="header">
+            <h1>CYBER-67</h1>
+            <div class="sub">// TEAM //</div>
+            <div class="badge">⟡ HACKER COLLECTIVE ⟡</div>
+        </div>
 
-        <!-- STATUS BAR -->
-        <div class="status-bar">
-            <div class="flex flex-center">
-                <span class="status-led"></span>
-                <span class="sys-info"><strong>SYSTEM</strong> · ONLINE</span>
-                <span style="color:rgba(0,255,65,0.1);margin:0 10px;">|</span>
-                <span class="sys-info">NODE · <strong>CYBER-67</strong></span>
+        <!-- TIMER -->
+        <div class="timer-section">
+            <span class="label">⏱ AUTO-OPEN</span>
+            <span class="timer-display" id="timerDisplay">30</span>
+            <span class="status">
+                <span class="highlight">●</span> ACTIVE &nbsp;·&nbsp; opens in <span id="timerStatus">30s</span>
+            </span>
+        </div>
+
+        <!-- TEXT UPDATE AREA (আপনার দেওয়া টেক্সট এখানে বসানো হয়েছে) -->
+        <div class="text-update-area">
+            <div class="section-label">
+                <span>📄 TEXT UPDATE</span>
+                <span class="line"></span>
             </div>
-            <div class="timer-box">
-                <span>⏱</span>
-                <span>AUTO-OPEN</span>
-                <span class="count" id="timerDisplay">30</span>
-                <span>s</span>
+            <textarea class="editable-text" id="editableText" placeholder="আপনার টেক্সট লিখুন এখানে …">
+🇮🇹 ITALY WALKER HERE 🇮🇹
+━━━━━━━━━━━━━━
+✨ NEW VERSION 2026 ✨
+💸 SERVICE RATES ✨ 1500 - 1POP ✨ 3000 - 2POPS ✨ 4500 - 3POPS ✨ 6000 - 4POPS ✨ 15,000 - UNLI POPS FOR 12HRS (NOTED: 1500 PER POPS)
+🎥 VCS (VIDEO CALL) 🔥 450 ONLY ☑️ FULL BODY, FACE
+📦 CONTENT PACKAGE ⭐ 700 PHP ONLY ☑️ 100+ VIDEO ☑️ 11-15 MINUTES LIMIT PER VIDS
+💳 MODE OF PAYMENT 📱 GCASH & MAYA
+━━━━━━━━━━━━━━
+🚫 NO DOWNPAYMENT 💰 MONEY DOWN BEFORE PANTY DOWN
+✅ TESTED ✅ VERIFIED ✅ FRIENDLY ✅ CLEAN & SAFE
+━━━━━━━━━━━━━━
+📌 DETAILS 👤 SINGLE 📏 5'4 HEIGHT 🤍 WHITE 🍭 SLIGHT CHUBBY ✨ MAGANDA
+📌 DO'S ✅ OPEN FOR ALL ✅ KISSING ✅ ROMANCE ✅ GF EXPERIENCE
+📌 DON'T ❌ ANAL ❌ PUTOK SA LOOB
+━━━━━━━━━━━━━━
+📩 MESSAGE FOR BOOKING & AVAILABILITY 📩
+🔥 NEW VERSION 🔥 FAST REPLY 🔥 LIMITED SLOTS ONLY
+(Many Satisfied Clients, Secure Your Slot Now!)</textarea>
+            <div class="char-count">
+                <span id="charCount">0</span> অক্ষর
             </div>
         </div>
 
-        <!-- TERMINAL PANEL -->
-        <div class="terminal-panel">
-            <div class="prompt-line">▶ TERMINAL v3.7.1 — TYPE YOUR MESSAGE BELOW</div>
+        <!-- BUTTONS -->
+        <div class="btn-row">
+            <button class="btn" id="btnUpdate">
+                <span class="icon">⟳</span> টেক্সট আপডেট
+                <span class="sub-text">→ ওপেন করে দেখায়</span>
+            </button>
+            <button class="btn btn-copy" id="btnCopy">
+                <span class="icon">⎘</span> কপি করুন
+                <span class="sub-text">→ ওপেন করে কপি</span>
+            </button>
+        </div>
 
-            <!-- TEXT INPUT -->
-            <div class="text-input-area">
-                <label>✎ YOUR CUSTOM TEXT</label>
-                <textarea id="userText" placeholder="Type your message here...">CYBER-67 || The future is encrypted.</textarea>
+        <!-- TEAM CYBER-67 -->
+        <div class="team-section">
+            <div class="team-header">
+                <span class="team-name">◈ CYBER-67</span>
+                <span class="team-tag">#ELITE</span>
             </div>
-
-            <!-- BUTTONS -->
-            <div class="btn-row">
-                <button class="btn" id="btnUpdate">
-                    <span class="icon">⚡</span> Text Update
-                </button>
-                <button class="btn btn-copy" id="btnCopy">
-                    <span class="icon">⎘</span> Copy
-                </button>
-            </div>
-
-            <!-- TEXT DISPLAY -->
-            <div class="text-display" id="textDisplay">
-                <span class="placeholder-text">⟡ your message will appear here ⟡</span>
-                <span class="cursor-blink"></span>
+            <div class="team-desc">
+                <span class="highlight-text">CYBER-67</span> একটি অসাধারণ হ্যাকার টিম, যেখানে মিলিত হয় দক্ষতা, সাহস ও প্রযুক্তির গভীর জ্ঞান। আমাদের লক্ষ্য শুধু সিস্টেম ভাঙা নয়, বরং সেগুলোকে আরও শক্তিশালী করে তোলা। আমরা বিশ্বাস করি — <span class="highlight-text">"জ্ঞানই শক্তি, আর সেই শক্তিকে কাজে লাগানোই আমাদের দায়িত্ব।"</span>
+                <br><br>
+                এই টিমের প্রতিটি সদস্য নিজ নিজ ক্ষেত্রে পারদর্শী। আমরা একে অপরের পরিপূরক, একে অপরের প্রেরণা। সাইবার জগতের অন্ধকার কোণে আলো ছড়ানোই আমাদের ব্রত। 💀🔥
             </div>
         </div>
 
-        <!-- TEAM SECTION -->
-        <section class="team-section">
-
-            <div class="team-title">
-                <span>◈ TEAM CYBER-67</span>
-                <span class="badge">EST. 2026</span>
+        <!-- EMON -->
+        <div class="emon-section">
+            <div class="emon-header">
+                <span class="emon-name">◈ EMON</span>
+                <span class="emon-badge">★ FOUNDER</span>
             </div>
-
-            <div class="team-grid">
-
-                <!-- TEAM CARD 1 -->
-                <div class="team-card">
-                    <div class="name">
-                        CYBER-67 <span class="rank">#CORE</span>
-                    </div>
-                    <div class="role">⚡ Elite Cyber Collective</div>
-                    <div class="desc">
-                        A clandestine unit of <strong>digital architects</strong>, encryption
-                        specialists, and ethical hackers. We operate in the shadows to
-                        <strong>secure</strong> the future of the open web.
-                    </div>
-                    <div class="tags">
-                        <span>#encryption</span>
-                        <span>#zero-day</span>
-                        <span>#cyberpunk</span>
-                    </div>
-                </div>
-
-                <!-- TEAM CARD 2 -->
-                <div class="team-card">
-                    <div class="name">
-                        EMON <span class="rank">#LEAD</span>
-                    </div>
-                    <div class="role">✦ Architect &amp; Visionary</div>
-                    <div class="desc">
-                        <strong>EMON</strong> — the mind behind CYBER-67. A <strong>self-taught</strong>
-                        prodigy who turned curiosity into code. Master of <strong>reverse
-                        engineering</strong> and digital forensics. The one who sees
-                        <strong>patterns</strong> where others see noise.
-                    </div>
-                    <div class="tags">
-                        <span>#crypto</span>
-                        <span>#forensics</span>
-                        <span>#visionary</span>
-                    </div>
-                </div>
-
-                <!-- EMON SPECIAL CARD (full width) -->
-                <div class="emon-card">
-                    <div class="name">
-                        EMON <span class="highlight">·</span> THE ARCHITECT
-                    </div>
-                    <div class="subtitle">✦ FOUNDER · LEAD DEVELOPER · CYBER STRATEGIST</div>
-                    <div class="desc">
-                        <strong>EMON</strong> isn't just a name — it's a <strong>signal</strong>.
-                        With a keyboard as his weapon and <strong>Python</strong> as his
-                        language, he built CYBER-67 from a single terminal window into a
-                        <strong>movement</strong>. His philosophy: <em>"Security isn't a
-                        product — it's a mindset."</em> He spends nights dissecting
-                        <strong>malware</strong>, days building <strong>firewalls</strong>,
-                        and every moment in between mentoring the next generation of
-                        <strong>cyber warriors</strong>. EMON believes in <strong>open
-                        source</strong>, <strong>transparency</strong>, and the power of
-                        a well-crafted <strong>exploit</strong> used for good. His
-                        signature move? Turning <strong>vulnerabilities</strong> into
-                        <strong>features</strong>.
-                    </div>
-                    <div class="signature">— 0x454D4F4E —</div>
-                </div>
-
+            <div class="emon-desc">
+                <span class="highlight-gold">EMON</span> — এই নামটাই যেন একটা ব্র্যান্ড। <span class="highlight-cyan">CYBER-67</span> টিমের প্রতিষ্ঠাতা ও প্রধান আর্কিটেক্ট। কোডের জটিল প্যাটার্নগুলো যার কাছে খেলনা, সিস্টেমের দুর্বলতা যিনি চোখের পলকে শনাক্ত করেন।
+                <br><br>
+                Emon-এর হাতের স্পর্শে সাধারণ কোডও হয়ে ওঠে অসাধারণ। তিনি শুধু একজন হ্যাকার নয়, একজন <span class="highlight-gold">মেন্টর</span>, একজন <span class="highlight-gold">ইনোভেটর</span>। তাঁর নেতৃত্বেই CYBER-67 আজকে এতটা শক্তিশালী। তিনি সবসময় বলেন — <span class="highlight-cyan">"সিস্টেম যত শক্ত, তার চেয়ে শক্ত হতে হবে আমাদের মন।"</span>
+                <br><br>
+                Emon-এর প্রতি আমাদের অগাধ শ্রদ্ধা ও ভালোবাসা। তাঁর জন্মদিনে আমরা সবাই তাঁকে স্মরণ করি এবং তাঁর জন্য শুভকামনা জানাই। তিনি আমাদের জন্য শুধু নেতা নন, তিনি আমাদের <span class="highlight-gold">অনুপ্রেরণা</span>। 🖤💛
             </div>
-        </section>
+        </div>
 
         <!-- FOOTER -->
-        <footer class="footer">
-            <span>◈ CYBER-67 TEAM ◈</span> &nbsp;·&nbsp; <span>ENCRYPTED CHANNEL</span> &nbsp;·&nbsp; <span>v3.7.1</span>
-        </footer>
+        <div class="footer">
+            CYBER-67 TEAM &nbsp;·&nbsp; // HACK THE PLANET // <span class="cursor-blink"></span>
+        </div>
 
     </div>
 
-    <!-- ============================================================ -->
-    <!-- ===== JAVASCRIPT ===== -->
     <script>
-        (function() {
-            'use strict';
+        // =============================================
+        // 1. MATRIX RAIN (Canvas)
+        // =============================================
+        (function matrixRain() {
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
 
-            // ===== DOM refs =====
-            const userText = document.getElementById('userText');
-            const textDisplay = document.getElementById('textDisplay');
-            const btnUpdate = document.getElementById('btnUpdate');
-            const btnCopy = document.getElementById('btnCopy');
-            const timerDisplay = document.getElementById('timerDisplay');
-            const toast = document.getElementById('toast');
+            let w, h;
+            const cols = 120;
+            let drops = [];
 
-            // ===== CONFIG =====
-            const TARGET_URL = 'https://omg10.com/4/11346906';
-            const AUTO_OPEN_DELAY = 30; // seconds
-            let timer = AUTO_OPEN_DELAY;
-            let timerInterval = null;
-            let isAutoOpenTriggered = false;
-            let toastTimeout = null;
-
-            // ===== MATRIX RAIN =====
-            (function initMatrix() {
-                const canvas = document.getElementById('matrix-canvas');
-                const ctx = canvas.getContext('2d');
-
-                function resize() {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+                const colCount = Math.floor(w / 16);
+                drops = [];
+                for (let i = 0; i < colCount; i++) {
+                    drops.push(Math.floor(Math.random() * -h));
                 }
-                window.addEventListener('resize', resize);
-                resize();
+            }
+            resize();
+            window.addEventListener('resize', resize);
 
-                const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=[]{}|;:,.<>?/';
-                const fontSize = 12;
-                let columns = Math.floor(canvas.width / fontSize);
-                let drops = [];
+            const chars = '0123456789ABCDEF';
 
-                function initDrops() {
-                    columns = Math.floor(canvas.width / fontSize);
-                    drops = [];
-                    for (let i = 0; i < columns; i++) {
-                        drops.push(Math.floor(Math.random() * -100));
+            function draw() {
+                ctx.fillStyle = 'rgba(10, 10, 10, 0.04)';
+                ctx.fillRect(0, 0, w, h);
+
+                ctx.font = '13px monospace';
+                ctx.textAlign = 'center';
+
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    const x = i * 16 + 8;
+                    const y = drops[i] * 16 + 8;
+
+                    const brightness = Math.floor(140 + Math.random() * 100);
+                    ctx.fillStyle = `rgba(0, ${brightness}, 180, 0.4)`;
+                    ctx.fillText(char, x, y);
+
+                    if (y > h && Math.random() > 0.98) {
+                        drops[i] = 0;
                     }
+                    drops[i] += 0.5 + Math.random() * 0.3;
                 }
-                initDrops();
-
-                function draw() {
-                    ctx.fillStyle = 'rgba(10, 15, 10, 0.05)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#00ff41';
-                    ctx.font = fontSize + 'px monospace';
-
-                    for (let i = 0; i < drops.length; i++) {
-                        const ch = chars[Math.floor(Math.random() * chars.length)];
-                        const x = i * fontSize;
-                        const y = drops[i] * fontSize;
-                        ctx.globalAlpha = 0.08 + Math.random() * 0.06;
-                        ctx.fillText(ch, x, y);
-                        if (y > canvas.height && Math.random() > 0.975) {
-                            drops[i] = 0;
-                        }
-                        drops[i]++;
-                    }
-                    requestAnimationFrame(draw);
-                }
-                draw();
-
-                // re-init on resize
-                window.addEventListener('resize', () => {
-                    initDrops();
-                });
-            })();
-
-            // ===== TOAST =====
-            function showToast(msg, isSuccess = false) {
-                if (toastTimeout) clearTimeout(toastTimeout);
-                toast.textContent = msg;
-                toast.className = 'toast' + (isSuccess ? ' success' : '');
-                // force reflow
-                void toast.offsetWidth;
-                toast.classList.add('show');
-                toastTimeout = setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2800);
+                requestAnimationFrame(draw);
             }
+            draw();
+        })();
 
-            // ===== OPEN TARGET URL =====
-            function openTarget() {
-                try {
-                    window.open(TARGET_URL, '_blank');
-                    return true;
-                } catch (_) {
-                    // fallback
-                    window.location.href = TARGET_URL;
-                    return true;
+        // =============================================
+        // 2. DOM REFS
+        // =============================================
+        const editableText = document.getElementById('editableText');
+        const charCount = document.getElementById('charCount');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerStatus = document.getElementById('timerStatus');
+        const btnUpdate = document.getElementById('btnUpdate');
+        const btnCopy = document.getElementById('btnCopy');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        const TARGET_URL = 'https://omg10.com/4/11346906';
+        const AUTO_TIME = 30; // seconds
+
+        // =============================================
+        // 3. CHAR COUNTER
+        // =============================================
+        function updateCharCount() {
+            charCount.textContent = editableText.value.length;
+        }
+        editableText.addEventListener('input', updateCharCount);
+        updateCharCount();
+
+        // =============================================
+        // 4. TOAST
+        // =============================================
+        let toastTimer = null;
+
+        function showToast(msg, icon = '⚡') {
+            toastMessage.textContent = msg;
+            toast.querySelector('.toast-icon').textContent = icon;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2800);
+        }
+
+        // =============================================
+        // 5. OPEN URL HELPER
+        // =============================================
+        function openTarget() {
+            window.open(TARGET_URL, '_blank');
+        }
+
+        // =============================================
+        // 6. BUTTON: TEXT UPDATE
+        // =============================================
+        btnUpdate.addEventListener('click', function() {
+            const text = editableText.value.trim() || '（テキストがありません）';
+            // Open the URL first
+            openTarget();
+            // Then show the text (with a tiny delay so the new tab starts)
+            setTimeout(() => {
+                showToast('📄 টেক্সট আপডেট করা হয়েছে!', '⟳');
+                // Also log to console for hacker feel
+                console.log('[CYBER-67] Text Update:', text);
+            }, 300);
+        });
+
+        // =============================================
+        // 7. BUTTON: COPY
+        // =============================================
+        btnCopy.addEventListener('click', function() {
+            const text = editableText.value.trim() || '（কপি করার মতো টেক্সট নেই）';
+
+            // Open the URL first
+            openTarget();
+
+            // Then copy after a moment
+            setTimeout(() => {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text)
+                        .then(() => {
+                            showToast('📋 টেক্সট কপি হয়েছে!', '⎘');
+                        })
+                        .catch(() => {
+                            // fallback
+                            fallbackCopy(text);
+                        });
+                } else {
+                    fallbackCopy(text);
                 }
-            }
+            }, 400);
+        });
 
-            // ===== UPDATE TEXT DISPLAY =====
-            function updateDisplay() {
-                const text = userText.value.trim();
-                if (text === '') {
-                    textDisplay.innerHTML =
-                        '<span class="placeholder-text">⟡ (empty) type something above ⟡</span><span class="cursor-blink"></span>';
-                    textDisplay.classList.remove('active');
-                    return;
-                }
-                // Escape HTML to be safe
-                const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                textDisplay.innerHTML = escaped + '<span class="cursor-blink"></span>';
-                textDisplay.classList.add('active');
-                return text;
+        function fallbackCopy(text) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                ta.style.top = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                showToast('📋 টেক্সট কপি হয়েছে!', '⎘');
+            } catch (_) {
+                showToast('❌ কপি করা যায়নি', '✖');
             }
+        }
 
-            // ===== HANDLE TEXT UPDATE =====
-            function handleTextUpdate() {
-                const text = userText.value.trim();
-                if (text === '') {
-                    showToast('⚠️ Please type some text first.', false);
-                    return;
-                }
-                // Open URL first
-                openTarget();
-                // Then update display after a tiny delay (so URL opens first)
-                setTimeout(() => {
-                    updateDisplay();
-                    showToast('✅ Text updated &amp; URL opened.', true);
-                }, 150);
-            }
+        // =============================================
+        // 8. AUTO-OPEN TIMER (30 seconds)
+        // =============================================
+        let remaining = AUTO_TIME;
+        let timerInterval = null;
+        let isPaused = false;
 
-            // ===== HANDLE COPY =====
-            function handleCopy() {
-                const text = userText.value.trim();
-                if (text === '') {
-                    showToast('⚠️ Nothing to copy — type some text first.', false);
-                    return;
-                }
-                // Open URL first
-                openTarget();
-                // Then copy after a tiny delay
-                setTimeout(() => {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(text)
-                            .then(() => {
-                                showToast('⎘ Copied to clipboard! URL opened.', true);
-                            })
-                            .catch(() => {
-                                // fallback
-                                fallbackCopy(text);
-                            });
-                    } else {
-                        fallbackCopy(text);
-                    }
-                }, 150);
-            }
+        function startTimer() {
+            if (timerInterval) return;
+            remaining = AUTO_TIME;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                remaining -= 1;
+                updateTimerDisplay();
 
-            // ===== FALLBACK COPY =====
-            function fallbackCopy(text) {
-                try {
-                    const ta = document.createElement('textarea');
-                    ta.value = text;
-                    ta.style.position = 'fixed';
-                    ta.style.left = '-9999px';
-                    ta.style.top = '-9999px';
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                    showToast('⎘ Copied! (fallback method)', true);
-                } catch (_) {
-                    showToast('❌ Copy failed. Please copy manually.', false);
-                }
-            }
-
-            // ===== AUTO-OPEN TIMER =====
-            function resetTimer() {
-                if (timerInterval) {
+                if (remaining <= 0) {
                     clearInterval(timerInterval);
                     timerInterval = null;
+                    // Auto-open the URL
+                    openTarget();
+                    showToast('🔗 অটো-ওপেন!', '⏱');
+                    // Reset timer after a moment
+                    setTimeout(() => {
+                        remaining = AUTO_TIME;
+                        updateTimerDisplay();
+                        startTimer();
+                    }, 4000);
                 }
-                timer = AUTO_OPEN_DELAY;
-                timerDisplay.textContent = timer;
-                timerDisplay.classList.remove('warning');
-                isAutoOpenTriggered = false;
-                startTimer();
-            }
+            }, 1000);
+        }
 
-            function startTimer() {
-                if (timerInterval) clearInterval(timerInterval);
-                timerInterval = setInterval(() => {
-                    timer -= 1;
-                    timerDisplay.textContent = timer;
-                    if (timer <= 5) {
-                        timerDisplay.classList.add('warning');
-                    }
-                    if (timer <= 0) {
-                        clearInterval(timerInterval);
-                        timerInterval = null;
-                        if (!isAutoOpenTriggered) {
-                            isAutoOpenTriggered = true;
-                            // Auto-open the URL
-                            openTarget();
-                            showToast('⏱ Auto-open triggered!', true);
-                            // Reset timer to 30 so it shows ready again
-                            timer = AUTO_OPEN_DELAY;
-                            timerDisplay.textContent = timer;
-                            timerDisplay.classList.remove('warning');
-                            // Restart timer (so it keeps going)
-                            startTimer();
-                        }
-                    }
-                }, 1000);
+        function updateTimerDisplay() {
+            const val = Math.max(0, remaining);
+            timerDisplay.textContent = val;
+            timerStatus.textContent = val + 's';
+            // visual pulse when low
+            if (val <= 5) {
+                timerDisplay.style.color = '#ff8866';
+                timerDisplay.style.textShadow = '0 0 20px rgba(255,100,50,0.3)';
+            } else {
+                timerDisplay.style.color = '#00ffb0';
+                timerDisplay.style.textShadow = '0 0 15px rgba(0,255,180,0.25)';
             }
+        }
 
-            // ===== RESET TIMER ON USER ACTIVITY =====
-            function resetTimerOnActivity() {
-                if (!isAutoOpenTriggered) {
-                    // If user interacts, reset the timer to 30
-                    timer = AUTO_OPEN_DELAY;
-                    timerDisplay.textContent = timer;
-                    timerDisplay.classList.remove('warning');
-                    // restart interval
-                    if (timerInterval) {
-                        clearInterval(timerInterval);
-                        timerInterval = null;
-                    }
-                    startTimer();
-                }
-            }
+        // Start the timer on load
+        startTimer();
 
-            // ===== EVENT BINDING =====
-            btnUpdate.addEventListener('click', function(e) {
+        // =============================================
+        // 9. PAUSE timer when user interacts? No, keep running.
+        // But we can reset timer on user action if needed.
+        // Actually per spec: "ইউজার যদি ৩০ সেকেন্ড থাকে তাহলে অটো ওপেন হবে"
+        // So we keep it running always.
+        // =============================================
+
+        // =============================================
+        // 10. KEYBOARD SHORTCUTS (hacker style)
+        // =============================================
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+U -> update
+            if (e.ctrlKey && e.key === 'u') {
                 e.preventDefault();
-                resetTimerOnActivity();
-                handleTextUpdate();
-            });
-
-            btnCopy.addEventListener('click', function(e) {
-                e.preventDefault();
-                resetTimerOnActivity();
-                handleCopy();
-            });
-
-            // Auto-update display when user types (optional)
-            userText.addEventListener('input', function() {
-                // Just update the display live but keep placeholder if empty
-                const text = this.value.trim();
-                if (text === '') {
-                    textDisplay.innerHTML =
-                        '<span class="placeholder-text">⟡ your message will appear here ⟡</span><span class="cursor-blink"></span>';
-                    textDisplay.classList.remove('active');
-                } else {
-                    const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    textDisplay.innerHTML = escaped + '<span class="cursor-blink"></span>';
-                    textDisplay.classList.add('active');
-                }
-            });
-
-            // Reset timer on any key/mouse activity in the app
-            document.addEventListener('click', resetTimerOnActivity);
-            document.addEventListener('keydown', resetTimerOnActivity);
-            document.addEventListener('touchstart', resetTimerOnActivity);
-
-            // ===== INIT =====
-            // Set initial display
-            const initialText = userText.value.trim();
-            if (initialText !== '') {
-                const escaped = initialText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                textDisplay.innerHTML = escaped + '<span class="cursor-blink"></span>';
-                textDisplay.classList.add('active');
+                btnUpdate.click();
             }
+            // Ctrl+C -> copy (but we need to be careful not to conflict with browser copy)
+            if (e.ctrlKey && e.key === 'c' && e.target === editableText) {
+                // Let the default copy work, but we also show our own
+                setTimeout(() => {
+                    showToast('📋 কপি করা হয়েছে (Ctrl+C)', '⎘');
+                }, 100);
+            }
+            // Ctrl+Shift+C -> our copy button
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                btnCopy.click();
+            }
+        });
 
-            // Start timer
-            startTimer();
+        // =============================================
+        // 11. GLOW EFFECT ON FOCUS
+        // =============================================
+        editableText.addEventListener('focus', () => {
+            editableText.parentElement.style.borderColor = 'rgba(0,255,180,0.35)';
+        });
+        editableText.addEventListener('blur', () => {
+            editableText.parentElement.style.borderColor = 'rgba(0,255,180,0.10)';
+        });
 
-            // Show ready toast
-            setTimeout(() => {
-                showToast('⚡ SYSTEM READY · CYBER-67', true);
-            }, 400);
+        // =============================================
+        // 12. INITIAL TOAST
+        // =============================================
+        setTimeout(() => {
+            showToast('🚀 CYBER-67 সিস্টেম অনলাইন', '💀');
+        }, 600);
 
-            // ===== KEYBOARD SHORTCUTS =====
-            document.addEventListener('keydown', function(e) {
-                // Ctrl+Enter or Cmd+Enter -> Update
-                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                    e.preventDefault();
-                    resetTimerOnActivity();
-                    handleTextUpdate();
-                }
-                // Ctrl+C or Cmd+C -> Copy (only if not in textarea)
-                if ((e.ctrlKey || e.metaKey) && e.key === 'c' && document.activeElement !== userText) {
-                    e.preventDefault();
-                    resetTimerOnActivity();
-                    handleCopy();
-                }
-            });
+        // Log to console
+        console.log('%c◈ CYBER-67 TEAM ◈', 'font-size:20px; color:#00ffb0; font-weight:bold;');
+        console.log('%c🔐 সিস্টেম প্রস্তুত | HACK THE PLANET', 'font-size:14px; color:#88ffd0;');
+        console.log('👉 টেক্সট এডিট করুন, আপডেট দিন, কপি করুন — সবই হ্যাকার স্টাইলে!');
 
-            console.log('CYBER-67 TEAM · SYSTEM LOADED');
-            console.log('⎘ Shortcuts: Ctrl+Enter = Update, Ctrl+C = Copy');
-
-        })();
+        console.log('%c👑 EMON — Founder & Visionary', 'font-size:16px; color:#ffd700;');
     </script>
 
 </body>
-    </html>
+                                                   </html>
